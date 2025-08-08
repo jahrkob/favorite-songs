@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My favorite songs</title>
+  <style>
+    :root {
+      --bg: #0b0c10;
+      --card: #121319;
+      --muted: #9aa3b2;
+      --text: #e8ecf1;
+      --accent: #6aa9ff;
+      --radius: 16px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --input: #1b1e27;
+      --border: #2a2f3a;
+    }
+    @media (prefers-color-scheme: light) {
+      :root { --bg:#f6f7fb; --card:#ffffff; --text:#0b0c10; --muted:#5d6675; --shadow:0 6px 20px rgba(0,0,0,.08); --input:#f2f4f8; --border:#e6e8ee; }
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0; padding:32px; background:var(--bg); color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    header{
+      max-width:1100px; margin:0 auto 24px; display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    }
+    .title-wrap { display:flex; flex-direction:column; gap:6px; }
+    h1{ margin:0; font-size:clamp(24px, 3.5vw, 40px); letter-spacing:.2px; }
+    .sub{ color:var(--muted); font-size:14px; }
+
+    .controls { display:flex; gap:10px; align-items:center; }
+    .controls input[type="search"], .controls select{
+      appearance:none; border:1px solid var(--border); background:var(--input); color:var(--text);
+      border-radius:12px; padding:10px 12px; font-size:14px; outline:none; box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+    }
+    .controls input[type="search"]{ min-width:220px; }
+
+    .app{ max-width:1100px; margin:0 auto; display:grid; gap:20px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .card{ background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; transition:transform .2s ease, box-shadow .2s ease; display:flex; flex-direction:column; }
+    .card:hover{ transform:translateY(-4px); box-shadow:0 16px 40px rgba(0,0,0,.35); }
+    .player{ position:relative; aspect-ratio:16/9; background:#000; }
+    iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+    .meta{ padding:16px 16px 18px; display:flex; flex-direction:column; gap:8px; }
+    .title{ font-weight:700; font-size:18px; line-height:1.2; }
+    .artist{ color:var(--muted); font-size:14px; }
+    .album{ font-size:13px; color:var(--muted); }
+    .tags{ margin-top:4px; display:flex; gap:8px; flex-wrap:wrap; }
+    .tag{ font-size:11px; padding:6px 8px; border-radius:999px; background:linear-gradient(135deg, rgba(106,169,255,.18), rgba(106,169,255,.06)); color:var(--text); border:1px solid rgba(106,169,255,.35); }
+    footer{ max-width:1100px; margin:24px auto 0; color:var(--muted); font-size:12px; line-height:1.6; }
+    .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title-wrap">
+      <h1>My favorite songs</h1>
+      <div class="sub">Click play on any card to listen. Embedded from official uploads where possible.</div>
+    </div>
+    <div class="controls" role="region" aria-label="Song controls">
+      <input id="search" type="search" placeholder="Search songs, artists, albums…" aria-label="Search songs" />
+      <label for="sort" class="sr-only">Sort by</label>
+      <select id="sort" aria-label="Sort by">
+        <option value="default">Sort: Default order</option>
+        <option value="title">Sort: Title A–Z</option>
+        <option value="artist">Sort: Artist A–Z</option>
+        <option value="album">Sort: Album A–Z</option>
+      </select>
+    </div>
+  </header>
+
+  <main class="app" id="app" aria-live="polite"></main>
+
+  <footer>
+    <p>Videos are embedded from YouTube; availability can vary by region.</p>
+  </footer>
+
+  <script>
+    // All songs (kept previous ones and added new requests)
+    const originalSongs = [
+      {
+        title: 'Field of Hopes and Dreams',
+        artist: 'Toby Fox',
+        album: 'DELTARUNE Chapter 1 (Original Game Soundtrack)',
+        yt: 'ymNgfwgh1TU', // official auto-generated track
+      },
+      {
+        title: 'Covet',
+        artist: 'Basement',
+        album: 'Colourmeinkindness',
+        yt: 'bZrPfq15yJ4', // label upload (audio)
+      },
+      {
+        title: '八方來財 (Stacks from All Sides)',
+        artist: 'SKAI ISYOURGOD',
+        album: '八方來財 (Stacks from All Sides)',
+        yt: 'cUwnLvgdo5g', // audio-only
+      },
+      {
+        title: 'Karma Chameleon',
+        artist: 'Culture Club',
+        album: 'Colour by Numbers',
+        yt: '-57Yd_abewQ', // audio-only
+      },
+      {
+        title: 'Theme from Superman',
+        artist: 'John Williams',
+        album: 'Superman: The Movie (Original Motion Picture Soundtrack)',
+        yt: '-yVV8ntoU78', // audio
+      },
+      {
+        title: 'HOPINDIBILEN',
+        artist: 'Zackarias Hibaoui',
+        album: 'HOPINDIBILEN - Single',
+        yt: 'jpMq95ouq3c', // audio
+      },
+      {
+        title: 'California Dreamin\'',
+        artist: 'The Mamas & The Papas',
+        album: 'If You Can Believe Your Eyes & Ears',
+        yt: '-C5qS201-Mk', // audio
+      },
+      {
+        title: 'Otherside',
+        artist: 'Red Hot Chili Peppers',
+        album: 'Californication',
+        yt: 'HK1XaLG6McE', // audio
+      },
+      {
+        title: 'Stricken',
+        artist: 'Disturbed',
+        album: 'Ten Thousand Fists',
+        yt: 'VVLAnjtpXeM', // official video
+      },
+    ];
+
+    // Preserve original order with index
+    const songs = originalSongs.map((s, i) => ({ ...s, _idx: i }));
+
+    const app = document.getElementById('app');
+    const searchInput = document.getElementById('search');
+    const sortSelect = document.getElementById('sort');
+
+    const createCard = ({ title, artist, album, yt }) => {
+      const card = document.createElement('article');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="player" role="group" aria-label="Player for ${title} by ${artist}">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/${yt}?modestbranding=1&rel=0"
+            title="${title} — ${artist}"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <div class="meta">
+          <div class="title">${title}</div>
+          <div class="artist">By ${artist}</div>
+          <div class="album" aria-label="Album">Album: ${album}</div>
+          <div class="tags">
+            <span class="tag">YouTube</span>
+            <span class="tag">Playable</span>
+          </div>
+        </div>
+      `;
+      return card;
+    };
+
+    function render(list){
+      app.innerHTML = '';
+      list.forEach(song => app.appendChild(createCard(song)));
+    }
+
+    function getFilteredAndSorted(){
+      const q = searchInput.value.trim().toLowerCase();
+      const sortBy = sortSelect.value;
+
+      let filtered = songs.filter(({ title, artist, album }) => {
+        if (!q) return true;
+        const blob = `${title} ${artist} ${album}`.toLowerCase();
+        return blob.includes(q);
+      });
+
+      const collator = new Intl.Collator(undefined, { sensitivity: 'base' });
+      if (sortBy === 'title') filtered.sort((a,b)=> collator.compare(a.title, b.title));
+      else if (sortBy === 'artist') filtered.sort((a,b)=> collator.compare(a.artist, b.artist));
+      else if (sortBy === 'album') filtered.sort((a,b)=> collator.compare(a.album, b.album));
+      else filtered.sort((a,b)=> a._idx - b._idx); // default order
+
+      return filtered;
+    }
+
+    searchInput.addEventListener('input', () => render(getFilteredAndSorted()));
+    sortSelect.addEventListener('change', () => render(getFilteredAndSorted()));
+
+    // Initial render
+    render(getFilteredAndSorted());
+  </script>
+</body>
+</html>
