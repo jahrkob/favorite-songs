@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>My favorite songs</title>
-  <!-- Only title + description, per your request -->
   <meta name="description" content="A clean single-page playlist with search & sort - play tracks instantly via embedded audio." />
   <style>
     :root {
@@ -12,7 +11,6 @@
       --card: #121319;
       --muted: #9aa3b2;
       --text: #e8ecf1;
-      --accent: #6aa9ff;
       --radius: 16px;
       --shadow: 0 10px 30px rgba(0,0,0,.35);
       --input: #1b1e27;
@@ -32,16 +30,14 @@
     .title-wrap { display:flex; flex-direction:column; gap:6px; }
     h1{ margin:0; font-size:clamp(24px, 3.5vw, 40px); letter-spacing:.2px; }
     .sub{ color:var(--muted); font-size:14px; }
-
     .controls { display:flex; gap:10px; align-items:center; }
     .controls input[type="search"], .controls select{
       appearance:none; border:1px solid var(--border); background:var(--input); color:var(--text);
       border-radius:12px; padding:10px 12px; font-size:14px; outline:none; box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
     }
     .controls input[type="search"]{ min-width:220px; }
-
     .app{ max-width:1100px; margin:0 auto; display:grid; gap:20px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-    .card{ background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; transition:transform .2s ease, box-shadow .2s ease; display:flex; flex-direction:column; }
+    .card{ background:var(--card); border-radius:16px; box-shadow:var(--shadow); overflow:hidden; transition:transform .2s ease, box-shadow .2s ease; display:flex; flex-direction:column; }
     .card:hover{ transform:translateY(-4px); box-shadow:0 16px 40px rgba(0,0,0,.35); }
     .player{ position:relative; aspect-ratio:16/9; background:#000; }
     iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
@@ -80,56 +76,56 @@
   </footer>
 
   <script>
-    // Your 48-song set — these and only these
+    // Your 48-song set — these and only these (all with YouTube IDs)
     const originalSongs = [
       { title: 'Stricken', artist: 'Disturbed', album: 'Ten Thousand Fists', yt: 'VVLAnjtpXeM' },
       { title: 'Otherside', artist: 'Red Hot Chili Peppers', album: 'Californication', yt: '8901V1M5lDk' },
-      { title: 'Toxicity', artist: 'System Of A Down', album: 'Toxicity' },
+      { title: 'Toxicity', artist: 'System Of A Down', album: 'Toxicity', yt: 'mUEsqQpact0' },
       { title: 'Karma Chameleon - Remastered 2002', artist: 'Culture Club', album: 'Colour by Numbers (Remastered)', yt: 'h5WA79F4UCs' },
-      { title: 'Somewhere I Belong', artist: 'Linkin Park', album: 'Meteora' },
-      { title: 'Easy', artist: 'Commodores', album: 'Commodores' },
-      { title: 'I Fall Apart', artist: 'Post Malone', album: 'Stoney' },
+      { title: 'Somewhere I Belong', artist: 'Linkin Park', album: 'Meteora', yt: '-YQ8IbVIwPM' },
+      { title: 'Easy', artist: 'Commodores', album: 'Commodores', yt: '9nBSd1U18vM' },
+      { title: 'I Fall Apart', artist: 'Post Malone', album: 'Stoney', yt: 'gk0nB9vvYfU' },
       { title: 'Covet', artist: 'Basement', album: 'Colourmeinkindness', yt: 'bZrPfq15yJ4' },
-      { title: 'Lonely Day', artist: 'System Of A Down', album: 'Hypnotize' },
-      { title: 'The Batman Theme', artist: 'Danny Elfman', album: 'Batman (Original Motion Picture Score)' },
+      { title: 'Lonely Day', artist: 'System Of A Down', album: 'Hypnotize', yt: '9VBiJvJfC0Q' },
+      { title: 'The Batman Theme', artist: 'Danny Elfman', album: 'Batman (Original Motion Picture Score)', yt: 'YoaU3kRFvLg' },
       { title: "California Dreamin' - Single Version", artist: 'The Mamas & The Papas', album: 'If You Can Believe Your Eyes & Ears', yt: 'oU6uUEwZ8FM' },
-      { title: 'Never Too Late', artist: 'Three Days Grace', album: 'One-X' },
-      { title: 'Going The Distance - From "Rocky" Soundtrack / Remastered 2006', artist: 'Bill Conti', album: 'Rocky (Original Motion Picture Score)' },
-      { title: 'Main Title/The Immigrant', artist: 'Nino Rota, Carmine Coppola', album: 'The Godfather (Original Motion Picture Soundtrack)' },
-      { title: 'In the End', artist: 'Linkin Park', album: 'Hybrid Theory' },
-      { title: 'The Devil in I', artist: 'Slipknot', album: '.5: The Gray Chapter' },
-      { title: 'How Deep Is Your Love', artist: 'Bee Gees', album: 'Saturday Night Fever (Soundtrack)' },
-      { title: "That's Life - 2008 Remastered", artist: 'Frank Sinatra', album: "That's Life" },
-      { title: 'Nordhavn Station', artist: 'Magtens Korridorer', album: 'Nordhavn Station - Single' },
-      { title: 'Stjerner På Himlen', artist: 'The Minds Of 99', album: 'The Minds of 99' },
-      { title: 'Det Er Knud Som Er Død', artist: 'The Minds Of 99', album: 'Single' },
-      { title: 'Giv Mig En Dag', artist: 'Magtens Korridorer', album: 'Single' },
-      { title: "Can't Tell Me Nothing", artist: 'Kanye West', album: 'Graduation' },
-      { title: 'One Last Breath', artist: 'Creed', album: 'Weathered' },
-      { title: 'EARFQUAKE', artist: 'Tyler, The Creator', album: 'IGOR' },
-      { title: 'Dosed', artist: 'Red Hot Chili Peppers', album: 'By the Way' },
-      { title: "Movin' Out (Anthony's Song)", artist: 'Billy Joel', album: 'The Stranger' },
-      { title: 'Wind Of Change', artist: 'Scorpions', album: 'Crazy World' },
-      { title: 'Hail to the King', artist: 'Avenged Sevenfold', album: 'Hail to the King' },
-      { title: 'Everlong', artist: 'Foo Fighters', album: 'The Colour and the Shape' },
-      { title: 'Afterlife', artist: 'Avenged Sevenfold', album: 'Avenged Sevenfold' },
-      { title: 'Softcore', artist: 'The Neighbourhood', album: 'Hard To Imagine The Neighbourhood Ever Changing' },
-      { title: 'Float On', artist: 'Modest Mouse', album: 'Good News for People Who Love Bad News' },
-      { title: 'Black Hole Sun', artist: 'Soundgarden', album: 'Superunknown' },
-      { title: 'Sway (Quien Sera)', artist: 'Dean Martin', album: 'Single' },
-      { title: 'Borderline', artist: 'Tame Impala', album: 'The Slow Rush' },
-      { title: 'Last Goodbye', artist: 'Toby Fox', album: 'UNDERTALE Soundtrack' },
+      { title: 'Never Too Late', artist: 'Three Days Grace', album: 'One-X', yt: 'SRbA_JzFKuA' },
+      { title: 'Going The Distance - From "Rocky" Soundtrack / Remastered 2006', artist: 'Bill Conti', album: 'Rocky (Original Motion Picture Score)', yt: 'FLI7jJOQS5k' },
+      { title: 'Main Title/The Immigrant', artist: 'Nino Rota, Carmine Coppola', album: 'The Godfather (Original Motion Picture Soundtrack)', yt: 'SshzG6rtP6A' },
+      { title: 'In the End', artist: 'Linkin Park', album: 'Hybrid Theory', yt: 'gB9P0kpc1O4' },
+      { title: 'The Devil in I', artist: 'Slipknot', album: '.5: The Gray Chapter', yt: 'Ub_NI1lCrdA' },
+      { title: 'How Deep Is Your Love', artist: 'Bee Gees', album: 'Saturday Night Fever (Soundtrack)', yt: 'o51p5IRJ5Tc' },
+      { title: "That's Life - 2008 Remastered", artist: 'Frank Sinatra', album: "That's Life", yt: 'TnlPtaPxXfc' },
+      { title: 'Nordhavn Station', artist: 'Magtens Korridorer', album: 'Nordhavn Station - Single', yt: 'r3j2DH-Tkvk' },
+      { title: 'Stjerner På Himlen', artist: 'The Minds Of 99', album: 'The Minds of 99', yt: 'rIbnQf1tWMs' },
+      { title: 'Det Er Knud Som Er Død', artist: 'The Minds Of 99', album: 'Single', yt: '3HaTW6PuMyc' },
+      { title: 'Giv Mig En Dag', artist: 'Magtens Korridorer', album: 'Single', yt: '6n8BZCmaqkY' },
+      { title: "Can't Tell Me Nothing", artist: 'Kanye West', album: 'Graduation', yt: 'Vcljvd4Ef_o' },
+      { title: 'One Last Breath', artist: 'Creed', album: 'Weathered', yt: 'ziswLJvELtE' },
+      { title: 'EARFQUAKE', artist: 'Tyler, The Creator', album: 'IGOR', yt: 't-E2gm0a_N0' },
+      { title: 'Dosed', artist: 'Red Hot Chili Peppers', album: 'By the Way', yt: 'bFCW32Twsw8' },
+      { title: "Movin' Out (Anthony's Song)", artist: 'Billy Joel', album: 'The Stranger', yt: 'cJtL8vWNZ4o' },
+      { title: 'Wind Of Change', artist: 'Scorpions', album: 'Crazy World', yt: 'Ukh1zoiV304' },
+      { title: 'Hail to the King', artist: 'Avenged Sevenfold', album: 'Hail to the King', yt: 'MjwttGizNEs' },
+      { title: 'Everlong', artist: 'Foo Fighters', album: 'The Colour and the Shape', yt: 'AxuTd9rwEHQ' },
+      { title: 'Afterlife', artist: 'Avenged Sevenfold', album: 'Avenged Sevenfold', yt: 'Rhy__BcFtbM' },
+      { title: 'Softcore', artist: 'The Neighbourhood', album: 'Hard To Imagine The Neighbourhood Ever Changing', yt: 'NIma5XOxBq0' },
+      { title: 'Float On', artist: 'Modest Mouse', album: 'Good News for People Who Love Bad News', yt: '88XhEqgmRhM' },
+      { title: 'Black Hole Sun', artist: 'Soundgarden', album: 'Superunknown', yt: '9kIv6vVRKpw' },
+      { title: 'Sway (Quien Sera)', artist: 'Dean Martin', album: 'Single', yt: 'ZmUdd8G0ToA' },
+      { title: 'Borderline', artist: 'Tame Impala', album: 'The Slow Rush', yt: 'rymYToIEL9o' },
+      { title: 'Last Goodbye', artist: 'Toby Fox', album: 'UNDERTALE Soundtrack', yt: 'EpBQ5m3Ag3Q' },
       { title: 'Theme from Superman - Concert Version', artist: 'John Williams', album: 'Superman (Original Motion Picture Soundtrack)', yt: '-yVV8ntoU78' },
       { title: '八方來財(Stacks from All Sides)', artist: 'SKAI ISYOURGOD', album: '八方來財 (Stacks from All Sides)', yt: 'cUwnLvgdo5g' },
-      { title: 'One', artist: 'Metallica', album: '…And Justice for All' },
-      { title: "Can't Stop", artist: 'Red Hot Chili Peppers', album: 'By the Way' },
+      { title: 'One', artist: 'Metallica', album: '…And Justice for All', yt: 'apK2jCrfnsk' },
+      { title: "Can't Stop", artist: 'Red Hot Chili Peppers', album: 'By the Way', yt: 'D4INE2zO9OU' },
       { title: 'Man in the Box', artist: 'Alice In Chains', album: 'Facelift', yt: 'H1i5HaQV9ck' },
       { title: 'Escape (The Piña Colada Song)', artist: 'Rupert Holmes', album: 'Partners in Crime', yt: 'Xb6l38eP-4w' },
       { title: 'The Man', artist: 'Aloe Blacc', album: 'Lift Your Spirit', yt: '5JD7rzURR4c' },
       { title: 'Rainbow In The Dark', artist: 'Dio', album: 'Holy Diver (Remaster)', yt: '-G0u13COALA' },
       { title: 'The Escapists 2 Intro', artist: 'Oli Wood', album: 'The Escapists 2 (Original Soundtrack)', yt: 'TkM88tuTYxA' },
-      { title: 'Even Flow', artist: 'Pearl Jam', album: 'Ten' },
-      { title: 'Sultans of Swing', artist: 'Dire Straits', album: 'Dire Straits' },
+      { title: 'Even Flow', artist: 'Pearl Jam', album: 'Ten', yt: 'u7T2OR-O2Vk' },
+      { title: 'Sultans of Swing', artist: 'Dire Straits', album: 'Dire Straits', yt: 'cF3OWCYLLVQ' },
     ];
 
     // Preserve original order with index
@@ -142,9 +138,7 @@
     const createCard = ({ title, artist, album, yt }) => {
       const card = document.createElement('article');
       card.className = 'card';
-      const src = yt
-        ? `https://www.youtube-nocookie.com/embed/${yt}?modestbranding=1&rel=0`
-        : `https://www.youtube-nocookie.com/embed?listType=search&list=${encodeURIComponent(`${title} ${artist} audio`)}`;
+      const src = `https://www.youtube-nocookie.com/embed/${yt}?modestbranding=1&rel=0`;
 
       card.innerHTML = `
         <div class="player" role="group" aria-label="Player for ${title} by ${artist}">
